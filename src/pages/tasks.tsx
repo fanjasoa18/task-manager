@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useRef } from 'react';
+import { useTaskManager } from '../store/useTaskManager';
 
 interface Task {
   id: number,
@@ -7,42 +8,42 @@ interface Task {
 }
 
 const TaskManager = () => {
-  // const createTaskRef = ...:
-  // const {
-  //   tasks,
-  //   searchTask,
-  //   addTask,
-  //   updateTask,
-  //   deleteTask,
-  //   setSearchTask,
-  // } = useTaskManager();
+  const createTaskRef = useRef<HTMLInputElement>(null);
+  const {
+    tasks,
+    searchTask,
+    addTask,
+    updateTask,
+    deleteTask,
+    setSearchTask,
+  } = useTaskManager();
 
   const handleAddTask = () => {
-    const title = ""; // Replace with the value in the createTaskRef 
+    const title = createTaskRef.current?.value || '';
     const newTask = {
       id: Date.now(),
       title,
       completed: false,
     };
-    // addTask(newTask);
+    addTask(newTask);
+    createTaskRef.current!.value = '';
   };
 
-  const handleUpdateTask = (taskId: number, updatedTask: Task) => {
-    // updateTask(taskId, updatedTask);
+  const handleUpdateTask = (id: number, updatedTask: Task) => {
+    updateTask(id, updatedTask);
   };
 
-  const handleDeleteTask = (taskId: number) => {
-    // deleteTask(taskId);
+  const handleDeleteTask = (id: number) => {
+    deleteTask(id);
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    // setSearchTask(e.target.value);
+    setSearchTask(e.target.value);
   };
 
-  // See! I already give you everything!
-  // const filteredTasks = tasks.filter((task) =>
-  //   task.title.toLowerCase().includes(searchTask.toLowerCase())
-  // );
+  const filteredTasks = tasks.filter((task) =>
+    task.title.toLowerCase().includes(searchTask.toLowerCase())
+  );
 
   return (
     <div>
@@ -55,20 +56,24 @@ const TaskManager = () => {
       <input type="text" onChange={handleSearch} placeholder="Search Task" />
 
       <ul>
-        {/* 
-        {filteredTasks.map((task) => (
+         
+        {filteredTasks.map((task: { id: number; title: string }) => (
           <li key={task.id}>
             <input
               type="text"
               value={task.title}
               onChange={(e) =>
-                handleUpdateTask(task.id, { title: e.target.value })
+                handleUpdateTask(task.id, {
+                  title: e.target.value,
+                  id: 0,
+                  completed: false
+                })
               }
             />
             <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
           </li>
         ))}
-        */}
+        
       </ul>
     </div>
   );
